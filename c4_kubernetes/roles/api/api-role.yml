@@ -1,0 +1,9 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: anupam-api
+  name: api-admin
+rules:
+- apiGroups: ["rbac.authorization.k8s.io"] # "" indicates the core API group
+  resources: ["pods", "pods/log", "configmaps","services", "endpoints", "deployments"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]

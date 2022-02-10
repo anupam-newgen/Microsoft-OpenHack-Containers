@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poi
+  namespace: anupam-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poi
+      role: web
+  template:
+    metadata:
+      labels:
+        app: poi
+        role: web
+    spec:
+      containers:
+      - name: poi
+        image: registryjrc4068.azurecr.io/anupam/poi:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: /api/poi/healthcheck
+            port: poi-port
+        envFrom:
+          - configMapRef:
+              name: dbconfig
+        ports:  
+        - name: poi-port
+          containerPort: 80

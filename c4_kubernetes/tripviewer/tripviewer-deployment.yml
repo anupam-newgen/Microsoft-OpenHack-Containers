@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer
+  namespace: anupam-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+      role: web
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+        role: web
+    spec:
+      containers:
+      - name: tripviewer
+        image: registryjrc4068.azurecr.io/anupam/tripviewer:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "2024Mi"
+            cpu: "2024m"
+#        livenessProbe:
+#          initialDelaySeconds: 10
+#          httpGet:
+#            path: /api/apidocs
+#            port: user-port
+        env:
+          - name: USERPROFILE_API_ENDPOINT
+            value: "http://userprofile-service.anupam-api.svc.cluster.local/"
+          - name: TRIPS_API_ENDPOINT
+            value: "http://trips-service.anupam-api.svc.cluster.local/"
+        ports:  
+        - name: tripviewer-port
+          containerPort: 80

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  namespace: anupam-api
+  labels:
+    aadpodidbinding: anupam-pod-identity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      volumes:
+        - name: secrets-mount
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-keyvault"
+      containers:
+      - name: user
+        image: registryjrc4068.azurecr.io/anupam/user:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "2024Mi"
+            cpu: "2024m"
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: /api/user-java/healthcheck
+            port: user-port
+        env:
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlcredentials
+                key: SQLSERVER
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlcredentials
+                key: SQLUSER
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlcredentials
+                key: SQLPASSWORD
+        ports:  
+        - name: user-port
+          containerPort: 80
+        volumeMounts:
+        - name: secrets-mount
+          mountPath: "/mnt/secrets-store"

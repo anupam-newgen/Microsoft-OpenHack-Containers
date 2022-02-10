@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+  namespace: anupam-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+      role: web
+  template:
+    metadata:
+      labels:
+        app: trips
+        role: web
+    spec:
+      containers:
+      - name: user
+        image: registryjrc4068.azurecr.io/anupam/trips:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "2024Mi"
+            cpu: "1024m"
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: /api/trips/healthcheck
+            port: trips-port
+        envFrom:
+          - configMapRef:
+              name: dbconfig
+        ports:  
+        - name: trips-port
+          containerPort: 80
