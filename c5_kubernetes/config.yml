@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: dbconfig
-  namespace: anupam-api
-data:
-  SQL_SERVER: sqlserverjrc4068.database.windows.net
-  SQL_USER: sqladminjRc4068
-  SQL_PASSWORD: kQ9pg2Kl9
