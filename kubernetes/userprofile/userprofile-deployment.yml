@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userprofile
+  namespace: anupam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userprofile
+      role: web
+  template:
+    metadata:
+      labels:
+        app: userprofile
+        role: web
+    spec:
+      containers:
+      - name: user
+        image: registryjrc4068.azurecr.io/anupam/userprofile:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "2024Mi"
+            cpu: "2024m"
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: /api/user/healthcheck
+            port: user-port
+        envFrom:
+          - configMapRef:
+              name: dbconfig
+        ports:  
+        - name: up-port
+          containerPort: 80
+      imagePullSecrets:
+        - name: regcred
